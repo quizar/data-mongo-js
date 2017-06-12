@@ -31,7 +31,6 @@ export class MongoModel<T extends BaseEntity> {
     }
 
     update(data: T): Promise<T> {
-
         if (!data) {
             return Bluebird.reject(Error('`data` is required'));
         }

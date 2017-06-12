@@ -5,6 +5,7 @@ import { MongoModel } from './model'
 
 export type QuizItem = {
     id?: string
+    lang?: string
     entityId?: string
     propertyId?: string
     valueType?: string

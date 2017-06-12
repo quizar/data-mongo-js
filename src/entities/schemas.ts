@@ -8,38 +8,92 @@ import { Schema } from 'mongoose'
 export const QuizItemSchema = new Schema({
     // hash(entityId, propertyId)
     _id: String,
-    title: {
-        type: String,
-        match: /^[\S]+[ ][\S]{3,100}/,
-        required: true
-    },
     lang: {
         type: String,
         match: /^[a-z]{2}$/,
         lowercase: true,
         required: true
     },
-    userId: {
+    entityId: {
         type: String,
         trim: true,
+        match: /^Q\d+$/,
         maxlength: 40,
-        minlength: 1,
         required: true
     },
-
-    sources: {
-        type: [Schema.Types.Mixed]
+    propertyId: {
+        type: String,
+        trim: true,
+        match: /^P\d+$/,
+        maxlength: 40,
+        required: true
+    },
+    valueType: {
+        type: String,
+        trim: true,
+        maxlength: 20,
+        required: true,
+        enum: ['STRING', 'NUMBER', 'ENTITY']
+    },
+    value: {
+        type: String,
+        trim: true,
+        maxlength: 200,
+        required: true
+    },
+    valueEntityId: {
+        type: String,
+        trim: true,
+        match: /^Q\d+$/,
+        maxlength: 40
     },
 
-    tags: {
-        type: [Schema.Types.Mixed]
+    qualifierType: {
+        type: String,
+        trim: true,
+        maxlength: 20,
+        enum: ['STRING', 'NUMBER', 'ENTITY']
+    },
+    qualifierValue: {
+        type: String,
+        trim: true,
+        maxlength: 200
+    },
+    qualifierId: {
+        type: String,
+        trim: true,
+        match: /^Q\d+$/,
+        maxlength: 40
+    },
+
+    title: {
+        type: String,
+        maxlength: 400
+    },
+    question: {
+        type: String,
+        maxlength: 400
+    },
+    description: {
+        type: String,
+        maxlength: 400
+    },
+
+    imageData: {
+        type: String,
+        maxlength: 400
+    },
+    imageType: {
+        type: String,
+        trim: true,
+        maxlength: 40
     },
 
     updatedAt: {
-        type: Date
+        type: Number
     },
     createdAt: {
-        type: Date,
+        type: Number,
         default: Date.now,
         required: true
     }
@@ -55,11 +109,10 @@ QuizItemSchema.set('toObject', {
  * WikiEntitySchema
  */
 export const WikiEntitySchema = new Schema({
-    // hash(entityId, propertyId)
     _id: String,
-    title: {
+    label: {
         type: String,
-        match: /^[\S]+[ ][\S]{3,100}/,
+        match: /^Q\d+$/,
         required: true
     },
     lang: {
@@ -68,27 +121,44 @@ export const WikiEntitySchema = new Schema({
         lowercase: true,
         required: true
     },
-    userId: {
+    description: {
         type: String,
         trim: true,
-        maxlength: 40,
-        minlength: 1,
-        required: true
+        maxlength: 200
     },
 
-    sources: {
-        type: [Schema.Types.Mixed]
+    aliases: {
+        type: [String]
     },
 
-    tags: {
+    props: {
+        type: Schema.Types.Mixed
+    },
+
+    types: {
+        type: [String]
+    },
+
+    pageTitle: {
+        type: String,
+        trim: true,
+        maxlength: 400
+    },
+    extract: {
+        type: String,
+        trim: true,
+        maxlength: 400
+    },
+
+    categories: {
         type: [Schema.Types.Mixed]
     },
 
     updatedAt: {
-        type: Date
+        type: Number
     },
     createdAt: {
-        type: Date,
+        type: Number,
         default: Date.now,
         required: true
     }
@@ -106,12 +176,47 @@ WikiEntitySchema.set('toObject', {
 export const QuizSchema = new Schema({
     // hash(entityId, propertyId)
     _id: String,
+    target: {
+        type: String,
+        enum: ['PVALUE', 'QVALUE'],
+        required: true
+    },
+    lang: {
+        type: String,
+        match: /^[a-z]{2}$/,
+        lowercase: true,
+        required: true
+    },
+    title: {
+        type: String,
+        maxlength: 400
+    },
+    question: {
+        type: String,
+        maxlength: 400
+    },
+    description: {
+        type: String,
+        maxlength: 400
+    },
 
+    imageData: {
+        type: String,
+        maxlength: 400
+    },
+    imageType: {
+        type: String,
+        trim: true,
+        maxlength: 40
+    },
+    items: {
+        type: [Schema.Types.Mixed]
+    },
     updatedAt: {
-        type: Date
+        type: Number
     },
     createdAt: {
-        type: Date,
+        type: Number,
         default: Date.now,
         required: true
     }

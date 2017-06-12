@@ -10,7 +10,8 @@ export class QuizItemMapper extends Mapper<QuizItem, DomainQuizItem> {
             propertyId: data.propertyId,
             title: data.title,
             question: data.question,
-            description: data.description
+            description: data.description,
+            lang: data.lang
         };
 
         if (data.entityId) {
@@ -46,6 +47,7 @@ export class QuizItemMapper extends Mapper<QuizItem, DomainQuizItem> {
 
         if (data.entity) {
             entity.entityId = data.entity.id;
+            entity.lang = entity.lang || data.entity.lang;
         }
 
         if (data.value) {

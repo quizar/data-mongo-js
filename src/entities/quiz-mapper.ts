@@ -1,32 +1,7 @@
 
-import { Quiz } from './quiz';
+import { Quiz, QuizItemInfo } from './quiz';
 import { Mapper } from './mapper';
 import { Quiz as DomainQuiz, QuizTarget, QuizItemInfo as DomainQuizItemInfo } from 'quizar-domain';
-
-export type QuizItemInfo = {
-    itemId?: string
-    order?: number
-    imageData?: string
-    imageType?: string
-    title?: string
-    question?: string
-    description?: string
-    target?: string
-}
-
-export type Quiz = {
-    id?: string
-    target?: string
-    lang?: string
-    title?: string
-    question?: string
-    description?: string
-    items?: QuizItemInfo[]
-    imageData?: string
-    imageType?: string
-    createdAt?: number
-    updatedAt?: number
-}
 
 export class QuizMapper extends Mapper<Quiz, DomainQuiz> {
 
@@ -55,7 +30,7 @@ export class QuizMapper extends Mapper<Quiz, DomainQuiz> {
                 return Mapper.cleanObject(el);
             });
         }
-
+        
         return entity;
     }
 
@@ -89,5 +64,4 @@ export class QuizMapper extends Mapper<Quiz, DomainQuiz> {
 
         return entity;
     }
-
 }

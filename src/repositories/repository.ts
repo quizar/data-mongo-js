@@ -23,5 +23,4 @@ export class Repository<T, E, M extends MongoModel<E>, P extends IMapper<E, T>> 
     remove(id: string): Promise<boolean> {
         return this.model.remove(id).then(e => !!e);
     }
-
 }

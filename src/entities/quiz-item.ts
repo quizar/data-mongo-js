@@ -32,7 +32,7 @@ const quizItemTypeInfo = MapperContainer.createType('QuizItem');
 
 quizItemTypeInfo.add('id');
 quizItemTypeInfo.add('lang');
-quizItemTypeInfo.add('entityId', ['entityId', 'entity.id']);
+quizItemTypeInfo.add('entity.id', 'entityId');
 quizItemTypeInfo.add('propertyId');
 quizItemTypeInfo.add('value.type', 'valueType');
 quizItemTypeInfo.add('value.value', 'value');
@@ -43,6 +43,7 @@ quizItemTypeInfo.add('qualifier.id', 'qualifierId');
 quizItemTypeInfo.add('image.data', 'imageData');
 quizItemTypeInfo.add('image.propertyId', 'imageType');
 quizItemTypeInfo.add('title');
+quizItemTypeInfo.add('topics[].id', 'topicsIds[]');
 quizItemTypeInfo.add('createdAt');
 quizItemTypeInfo.add('updatedAt');
 

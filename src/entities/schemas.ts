@@ -19,7 +19,8 @@ export const QuizItemSchema = new Schema({
         trim: true,
         match: /^Q\d+$/,
         maxlength: 40,
-        required: true
+        required: true,
+        index: true
     },
     propertyId: {
         type: String,
@@ -89,6 +90,11 @@ export const QuizItemSchema = new Schema({
         maxlength: 40
     },
 
+    topicsIds: {
+        type: [String],
+        index: true
+    },
+
     updatedAt: {
         type: Number
     },
@@ -112,7 +118,6 @@ export const WikiEntitySchema = new Schema({
     _id: String,
     label: {
         type: String,
-        match: /^Q\d+$/,
         required: true
     },
     lang: {
@@ -211,6 +216,9 @@ export const QuizSchema = new Schema({
     },
     items: {
         type: [Schema.Types.Mixed]
+    },
+    topicsIds: {
+        type: [String]
     },
     updatedAt: {
         type: Number

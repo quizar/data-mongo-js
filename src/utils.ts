@@ -1,5 +1,5 @@
 
-export const TABLES_PREFIX = process.env.TABLES_PREFIX || 'v0';
+export const TABLES_PREFIX = process.env.MONGO_TABLES_PREFIX || 'v0';
 
 import * as _ from 'lodash'
 import * as Bluebird from 'bluebird'
@@ -72,8 +72,3 @@ export type IPlainObject<T> = {
 }
 
 export type PlainObject = IPlainObject<any>
-
-export type ModelData = {
-    id?: string | number
-    [index: string]: any
-}

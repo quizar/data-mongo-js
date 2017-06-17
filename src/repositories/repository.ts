@@ -1,9 +1,9 @@
 
-import { IRepository } from 'quizar-domain';
+import { IRepository, IEntityMapper, convertMongoError } from 'quizar-domain';
 import { MongoModel } from '../entities/model';
-import { IMapper } from '../entities/mapper';
+import { Bluebird } from '../utils';
 
-export class Repository<T, E, M extends MongoModel<E>, P extends IMapper<E, T>> implements IRepository<T> {
+export class Repository<DE, E, M extends MongoModel<E>, P extends IEntityMapper<DE, E>> implements IRepository<DE> {
     model: M;
     mapper: P;
 
@@ -12,15 +12,21 @@ export class Repository<T, E, M extends MongoModel<E>, P extends IMapper<E, T>> 
         this.mapper = mapper;
     }
 
-    create(data: T): Promise<T> {
-        const entity = this.mapper.toDataEntity(data);
-        return this.model.create(entity).then(d => this.mapper.fromDataEntity(d));
+    create(data: DE): Promise<DE> {
+        const entity = this.mapper.fromDomainEntity(data);
+        return this.model.create(entity)
+            .then(d => this.mapper.toDomainEntity(d))
+            .catch(error => convertMongoError(error));
     }
-    update(data: T): Promise<T> {
-        const entity = this.mapper.toDataEntity(data);
-        return this.model.update(entity).then(d => this.mapper.fromDataEntity(d));
+    update(data: DE): Promise<DE> {
+        const entity = this.mapper.fromDomainEntity(data);
+        return this.model.update(entity)
+            .then(d => this.mapper.toDomainEntity(d))
+            .catch(error => convertMongoError(error));
     }
     remove(id: string): Promise<boolean> {
-        return this.model.remove(id).then(e => !!e);
+        return this.model.remove(id)
+            .then(e => !!e)
+            .catch(error => convertMongoError(error));
     }
 }

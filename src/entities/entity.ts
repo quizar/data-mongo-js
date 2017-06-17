@@ -1,4 +1,5 @@
 
 export type BaseEntity = {
-    id?: string
+    id?: string | number
+    [index: string]: any
 }

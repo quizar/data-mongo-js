@@ -8,20 +8,20 @@ import { MapperContainer } from './mapper-container';
 export class QuizItemMapper extends EntityMapper<DomainQuizItem, QuizItem> {
     constructor() {
         const info = MapperContainer.getMapInfo('QuizInfo');
-        super(info.toDomainEntity, info.fromDomainEntity);
+        super(info.fromDomainEntity, info.toDomainEntity);
     }
 }
 
 export class QuizMapper extends EntityMapper<DomainQuiz, Quiz> {
     constructor() {
         const info = MapperContainer.getMapInfo('Quiz');
-        super(info.toDomainEntity, info.fromDomainEntity);
+        super(info.fromDomainEntity, info.toDomainEntity);
     }
 }
 
 export class WikiEntityMapper extends EntityMapper<DomainWikiEntity, WikiEntity> {
     constructor() {
         const info = MapperContainer.getMapInfo('WikiEntity');
-        super(info.toDomainEntity, info.fromDomainEntity);
+        super(info.fromDomainEntity, info.toDomainEntity);
     }
 }

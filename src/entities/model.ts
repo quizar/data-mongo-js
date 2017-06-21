@@ -23,10 +23,12 @@ export class MongoModel<T extends BaseEntity> {
     }
 
     normalizeCreate(data) {
+        data._id = data._id || data.id;
         return data;
     }
 
     normalizeUpdate(data) {
+        data._id = data._id || data.id;
         return data;
     }
 

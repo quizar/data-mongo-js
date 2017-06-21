@@ -36,7 +36,7 @@ quizItemTypeInfo.add('qualifier.id', 'qualifierId');
 quizItemTypeInfo.add('image.data', 'imageData');
 quizItemTypeInfo.add('image.propertyId', 'imageType');
 quizItemTypeInfo.add('pageTitle');
-quizItemTypeInfo.add('topics[].id', 'topicsIds[]');
+quizItemTypeInfo.add('topics[].id', 'topics[]');
 quizItemTypeInfo.add('createdAt');
 quizItemTypeInfo.add('updatedAt');
 
@@ -58,5 +58,6 @@ quizInfo.add('items[].title', 'items[].title');
 quizInfo.add('items[].question', 'items[].question');
 quizInfo.add('items[].description', 'items[].description');
 quizInfo.add('items[].target', 'items[].target');
+quizInfo.add('topics[].id', 'topics[]');
 quizInfo.add('createdAt');
 quizInfo.add('updatedAt');

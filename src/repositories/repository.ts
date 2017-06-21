@@ -11,18 +11,18 @@ export class Repository<DE, E, M extends MongoModel<E>, P extends IEntityMapper<
         const entity = this.mapper.fromDomainEntity(data);
         return this.model.create(entity)
             .then(d => this.mapper.toDomainEntity(d))
-            .catch(error => convertMongoError(error));
+            .catch(error => Bluebird.reject(convertMongoError(error)));
     }
     update<O>(data: DE, options?: O): Promise<DE> {
         const entity = this.mapper.fromDomainEntity(data);
         return this.model.update(entity)
             .then(d => this.mapper.toDomainEntity(d))
-            .catch(error => convertMongoError(error));
+            .catch(error => Bluebird.reject(convertMongoError(error)));
     }
     remove<O>(id: string, options?: O): Promise<boolean> {
         return this.model.remove(id)
             .then(e => !!e)
-            .catch(error => convertMongoError(error));
+            .catch(error => Bluebird.reject(convertMongoError(error)));
     }
 
     count(where: MongoParamsWhere): Promise<number> {
@@ -32,12 +32,12 @@ export class Repository<DE, E, M extends MongoModel<E>, P extends IEntityMapper<
     list(params: MongoParams): Promise<DE[]> {
         return this.model.list(params)
             .then(items => items.map(item => this.mapper.toDomainEntity(item)))
-            .catch(error => convertMongoError(error));
+            .catch(error => Bluebird.reject(convertMongoError(error)));
     }
 
     getById<O>(id: string, options?: O): Promise<DE> {
         return this.model.one({ where: { _id: id } })
             .then(d => this.mapper.toDomainEntity(d))
-            .catch(error => convertMongoError(error));
+            .catch(error => Bluebird.reject(convertMongoError(error)));
     }
 }

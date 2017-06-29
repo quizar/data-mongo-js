@@ -10,7 +10,7 @@ export class MongoModel<T extends BaseEntity> {
         this.model = model;
     }
 
-    create(data: T): Promise<T> {
+    create(data: T): Bluebird<T> {
         if (!data) {
             return Bluebird.reject(Error('`data` is required'));
         }
@@ -19,7 +19,9 @@ export class MongoModel<T extends BaseEntity> {
         } catch (e) {
             return Bluebird.reject(e);
         }
-        return this.model.create(data).then(get);
+        return new Bluebird<T>((resolve, reject) => {
+            this.model.create(data).then(get, reject).then(resolve);
+        });
     }
 
     normalizeCreate(data) {
@@ -32,7 +34,7 @@ export class MongoModel<T extends BaseEntity> {
         return data;
     }
 
-    update(data: T): Promise<T> {
+    update(data: T): Bluebird<T> {
         if (!data) {
             return Bluebird.reject(Error('`data` is required'));
         }
@@ -41,42 +43,52 @@ export class MongoModel<T extends BaseEntity> {
         } catch (e) {
             return Bluebird.reject(e);
         }
-        return this.model.findByIdAndUpdate(data.id, data).then(get)
+        return new Bluebird<T>((resolve, reject) => {
+            this.model.findByIdAndUpdate(data.id, data).then(get, reject).then(resolve);
+        });
     }
 
-    remove(params: MongoParams): Promise<T> {
+    remove(params: MongoParams): Bluebird<T> {
         if (!params) {
             Bluebird.reject(Error('`params` is required'));
         }
 
-        return this.model.remove(params.where).then(get);
+        return new Bluebird<T>((resolve, reject) => {
+            this.model.remove(params.where).then(get, reject).then(resolve);
+        });
     }
 
-    one(params: MongoParams): Promise<T> {
+    one(params: MongoParams): Bluebird<T> {
+        if (!params) {
+            Bluebird.reject(Error('`params` is required'));
+        }
+        return new Bluebird<T>((resolve, reject) => {
+            this.model.findOne(params.where, params.select).then(get, reject).then(resolve);
+        });
+    }
+
+    count(where: MongoParamsWhere): Bluebird<number> {
+        return new Bluebird<number>((resolve, reject) => {
+            this.model.count(where).then(resolve, reject);
+        });
+    }
+
+    list(params: MongoParams): Bluebird<T[]> {
         if (!params) {
             Bluebird.reject(Error('`params` is required'));
         }
 
-        return this.model.findOne(params.where, params.select).then(get);
-    }
-
-    count(where: MongoParamsWhere): Promise<number> {
-        return this.model.count(where);
-    }
-
-    list(params: MongoParams): Promise<T[]> {
-        if (!params) {
-            Bluebird.reject(Error('`params` is required'));
-        }
-
-        return this.model
-            .find(params.where)
-            .select(params.select)
-            .sort(params.sort)
-            .skip(params.offset || 0)
-            .limit(params.limit || 10)
-            .exec()
-            .then(get);
+        return new Bluebird<T[]>((resolve, reject) => {
+            this.model
+                .find(params.where)
+                .select(params.select)
+                .sort(params.sort)
+                .skip(params.offset || 0)
+                .limit(params.limit || 10)
+                .exec()
+                .then(get, reject)
+                .then(resolve);
+        });
     }
 }
 

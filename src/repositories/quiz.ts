@@ -4,6 +4,7 @@ import { QuizModel, Quiz } from '../entities/quiz';
 import { Repository } from './repository';
 import { QuizMapper } from '../entities/mappers';
 import { Connection } from 'mongoose';
+import { Bluebird } from '../utils';
 
 export class QuizRepository extends Repository<DomainQuiz, Quiz, QuizModel, QuizMapper> implements IQuizRepository {
 
@@ -11,7 +12,7 @@ export class QuizRepository extends Repository<DomainQuiz, Quiz, QuizModel, Quiz
         super(new QuizModel(connection), QuizMapper.instance);
     }
 
-    countByTopicId(topicId: string): Promise<number> {
+    countByTopicId(topicId: string): Bluebird<number> {
         return this.count({ topics: topicId });
     }
 }

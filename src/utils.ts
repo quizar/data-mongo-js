@@ -1,8 +1,9 @@
 
 export const TABLES_PREFIX = process.env.MONGO_TABLES_PREFIX || 'v0';
 
+import { Bluebird } from 'quizar-domain';
+
 import * as _ from 'lodash'
-import * as Bluebird from 'bluebird'
 import { createHash } from 'crypto'
 
 export { _, Bluebird }

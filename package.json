@@ -34,7 +34,6 @@
   },
   "homepage": "https://github.com/quizar/data-mongo-js#readme",
   "devDependencies": {
-    "@types/bluebird": "^3.5.5",
     "@types/lodash": "^4.14.65",
     "@types/mocha": "^2.2.41",
     "@types/mongoose": "^4.7.17",
@@ -43,7 +42,6 @@
     "typescript": "^2.3.4"
   },
   "dependencies": {
-    "bluebird": "^3.5.0",
     "lodash": "^4.17.4",
     "mongoose": "^4.10.5"
   }

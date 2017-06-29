@@ -40,4 +40,8 @@ export class Repository<DE, E, M extends MongoModel<E>, P extends IEntityMapper<
             .then(d => this.mapper.toDomainEntity(d))
             .catch(error => Bluebird.reject(convertMongoError(error)));
     }
+
+    updateMongo(condition, doc, options?){
+        return this.model.updateMongo(condition, doc, options)
+    }
 }

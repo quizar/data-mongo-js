@@ -4,10 +4,9 @@ import { BaseEntity } from './entity'
 import { Model, Schema } from 'mongoose'
 
 export class MongoModel<T extends BaseEntity> {
-    private model: Model<any>
 
-    constructor(model: Model<any>) {
-        this.model = model;
+    constructor(private model: Model<any>) {
+
     }
 
     create(data: T): Bluebird<T> {
@@ -45,6 +44,12 @@ export class MongoModel<T extends BaseEntity> {
         }
         return new Bluebird<T>((resolve, reject) => {
             this.model.findByIdAndUpdate(data.id, data).then(get, reject).then(resolve);
+        });
+    }
+
+    updateMongo(condition, data, options?) {
+        return new Bluebird<T>((resolve, reject) => {
+            this.model.update(condition, data, options).then(get, reject).then(resolve);
         });
     }
 

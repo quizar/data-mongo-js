@@ -25,7 +25,9 @@ export function isDigit(target) {
 }
 
 function mongoGetItem(data, nofields) {
-
+    if (~[null, undefined].indexOf(data)) {
+        return data;
+    }
     function mapItem(item) {
         return mongoGetItem(item, nofields);
     }

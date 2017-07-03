@@ -42,8 +42,17 @@ export class MongoModel<T extends BaseEntity> {
         } catch (e) {
             return Bluebird.reject(e);
         }
+
+        const udata = {};
+        if (data.set && Object.keys(data.set).length) {
+            udata['$set'] = data.set;
+        }
+        if (data.unset && Object.keys(data.unset).length) {
+            udata['$unset'] = data.unset;
+        }
+
         return new Bluebird<T>((resolve, reject) => {
-            this.model.findByIdAndUpdate(data.id, { $set: data.set, $unset: data.unset }).then(get, reject).then(resolve);
+            this.model.findByIdAndUpdate(data.id, udata).then(get, reject).then(resolve);
         });
     }
 

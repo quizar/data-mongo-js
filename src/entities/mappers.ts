@@ -1,5 +1,5 @@
 
-import { EntityMapper, QuizItem as DomainQuizItem, Quiz as DomainQuiz, WikiEntity as DomainWikiEntity } from 'quizar-domain';
+import { EntityMapper, QuizItem as DomainQuizItem, Quiz as DomainQuiz, WikiEntity as DomainWikiEntity, ENTITY_NAMES, EntityNameType, CodeError } from 'quizar-domain';
 import { QuizItem } from './quiz-item';
 import { Quiz } from './quiz';
 import { WikiEntity } from './wiki-entity';
@@ -48,5 +48,14 @@ export class WikiEntityMapper extends EntityMapper<DomainWikiEntity, WikiEntity>
             wikiEntityMapper = new WikiEntityMapper();
         }
         return wikiEntityMapper;
+    }
+}
+
+export function getMapper<DE, E>(name: EntityNameType): EntityMapper<DE, E> {
+    switch (name) {
+        case ENTITY_NAMES.Quiz: return <EntityMapper<DE, E>>QuizMapper.instance;
+        case ENTITY_NAMES.QuizItem: return <EntityMapper<DE, E>>QuizItemMapper.instance;
+        case ENTITY_NAMES.WikiEntity: return <EntityMapper<DE, E>>WikiEntityMapper.instance;
+        default: throw new CodeError({ message: `invalid mapper ${name}` });
     }
 }

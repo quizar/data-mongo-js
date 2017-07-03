@@ -1,10 +1,11 @@
 
 const debug = require('debug')('quizar-data');
-import { IRepository, IEntityMapper, convertMongoError, RepUpdateData, RepAccessOptions } from 'quizar-domain';
+import { IRepository, IEntityMapper, convertMongoError, RepUpdateData, RepAccessOptions, RepUpdateOptions, EntityNameType, CodeError } from 'quizar-domain';
 import { MongoModel, MongoParamsWhere, MongoParams, MongoUpdateData } from '../entities/model';
 import { Bluebird } from '../utils';
+import { getMapper } from '../entities/mappers';
 
-export class Repository<DE extends { id?: string }, E extends { id?: string }, M extends MongoModel<E>, P extends IEntityMapper<DE, E>> implements IRepository<DE> {
+export abstract class Repository<DE extends { id?: string }, E extends { id?: string }, M extends MongoModel<E>, P extends IEntityMapper<DE, E>> implements IRepository<DE> {
 
     constructor(private model: M, private mapper: P) { }
 
@@ -14,7 +15,7 @@ export class Repository<DE extends { id?: string }, E extends { id?: string }, M
             .then(d => this.mapper.toDomainEntity(d))
             .catch(error => Bluebird.reject(convertMongoError(error)));
     }
-    update<O>(data: RepUpdateData<DE>, options?: O): Bluebird<DE> {
+    update(data: RepUpdateData<DE>, options?: RepUpdateOptions): Bluebird<DE> {
         const entity = this.mapper.fromDomainEntity(data.item);
         const mdata: MongoUpdateData<E> = { id: entity.id, set: entity, unset: (data.delete || []).reduce((pv, cv) => { pv[cv.toString()] = ""; return pv; }, {}) };
 
@@ -42,9 +43,13 @@ export class Repository<DE extends { id?: string }, E extends { id?: string }, M
     }
 
     getById(id: string, options?: RepAccessOptions): Bluebird<DE> {
-        return this.model.one({ where: { _id: id } })
-            .then(d => this.mapper.toDomainEntity(d))
-            .catch(error => Bluebird.reject(convertMongoError(error)));
+        return Bluebird.try(() => {
+            return validateFields(this.getEntityName(), options && options.fields)
+        }).then(select =>
+            this.model.one({ where: { _id: id }, select: select })
+                .then(d => this.mapper.toDomainEntity(d))
+                .catch(error => Bluebird.reject(convertMongoError(error)))
+            );
     }
 
     exists(id: string): Bluebird<boolean> {
@@ -53,5 +58,21 @@ export class Repository<DE extends { id?: string }, E extends { id?: string }, M
 
     updateMongo(condition, doc, options?) {
         return this.model.updateMongo(condition, doc, options)
+    }
+
+    protected abstract getEntityName(): EntityNameType
+}
+
+function validateFields(name: EntityNameType, fields: string): string {
+    if (fields) {
+        const input = fields.split(/[\s,;]+/g);
+        const mapper = getMapper(name);
+        const output = input.map(item => mapper.fromDomainEntityField(item)).filter(item => !!item).map(item => item === 'id' ? '_id' : item);
+
+        if (input.length !== output.length) {
+            throw new CodeError({ message: `One or more input fields are invalid: ${input}` });
+        }
+
+        return output.join(' ');
     }
 }

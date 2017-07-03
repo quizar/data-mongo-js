@@ -1,4 +1,5 @@
 
+const debug = require('debug')('quizar-data');
 import { mongoGet as get, _, Bluebird, IPlainObject, PlainObject } from '../utils'
 import { BaseEntity } from './entity'
 import { Model, Schema } from 'mongoose'
@@ -33,7 +34,7 @@ export class MongoModel<T extends BaseEntity> {
         return data;
     }
 
-    update(data: MongoUpdateData<T>): Bluebird<T> {
+    update(data: MongoUpdateData<T>, options?: MongoOptions): Bluebird<T> {
         if (!data) {
             return Bluebird.reject(Error('`data` is required'));
         }
@@ -52,7 +53,9 @@ export class MongoModel<T extends BaseEntity> {
         }
 
         return new Bluebird<T>((resolve, reject) => {
-            this.model.findByIdAndUpdate(data.id, udata).then(get, reject).then(resolve);
+            this.model.findByIdAndUpdate(data.id, udata, options)
+                .then(get, reject)
+                .then(resolve);
         });
     }
 
@@ -76,6 +79,7 @@ export class MongoModel<T extends BaseEntity> {
         if (!params) {
             Bluebird.reject(Error('`params` is required'));
         }
+        // debug('one', params);
         return new Bluebird<T>((resolve, reject) => {
             this.model.findOne(params.where, params.select).then(get, reject).then(resolve);
         });
@@ -119,4 +123,8 @@ export type MongoUpdateData<T> = {
     id: string
     set?: T
     unset?: { [index: string]: string }
+}
+
+export type MongoOptions = {
+    select?: string
 }

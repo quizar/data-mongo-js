@@ -156,9 +156,9 @@ export const WikiEntitySchema = new Schema({
         maxlength: 400
     },
 
-    categories: {
-        type: [Schema.Types.Mixed]
-    },
+    // categories: {
+    //     type: [Schema.Types.Mixed]
+    // },
 
     cc2: {
         type: String

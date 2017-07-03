@@ -3,6 +3,7 @@ import { WikiEntitySchema } from './schemas'
 import { Schema, Connection } from 'mongoose'
 import { MongoModel } from './model'
 import { IPlainObject } from '../utils'
+// import { WikiEntityType } from 'quizar-domain';
 
 export type WikiEntity = {
     id?: string
@@ -12,9 +13,13 @@ export type WikiEntity = {
     aliases?: string[]
     props?: IPlainObject<string>
     types?: string[]
+    type?: string
     pageTitle?: string
+    pageId?: number
     extract?: string
     name?: string
+    cc2?: string
+    rank?: number
 }
 
 export class WikiEntityModel extends MongoModel<WikiEntity> {

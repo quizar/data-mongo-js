@@ -29,26 +29,19 @@ export const QuizItemSchema = new Schema({
         maxlength: 40,
         required: true
     },
-    valueType: {
+    propertyType: {
         type: String,
         trim: true,
         maxlength: 20,
         required: true,
         enum: ['STRING', 'NUMBER', 'ENTITY']
     },
-    value: {
+    propertyValue: {
         type: String,
         trim: true,
         maxlength: 200,
         required: true
     },
-    valueEntityId: {
-        type: String,
-        trim: true,
-        match: /^Q\d+$/,
-        maxlength: 40
-    },
-
     qualifierType: {
         type: String,
         trim: true,
@@ -144,6 +137,14 @@ export const WikiEntitySchema = new Schema({
         type: [String]
     },
 
+    type: {
+        type: String
+    },
+
+    pageId: {
+        type: Number
+    },
+
     pageTitle: {
         type: String,
         trim: true,
@@ -157,6 +158,14 @@ export const WikiEntitySchema = new Schema({
 
     categories: {
         type: [Schema.Types.Mixed]
+    },
+
+    cc2: {
+        type: String
+    },
+
+    rank: {
+        type: Number
     },
 
     updatedAt: {

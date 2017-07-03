@@ -1,9 +1,10 @@
 
-import { IRepository, IEntityMapper, convertMongoError } from 'quizar-domain';
-import { MongoModel, MongoParamsWhere, MongoParams } from '../entities/model';
+const debug = require('debug')('quizar-data');
+import { IRepository, IEntityMapper, convertMongoError, RepUpdateData } from 'quizar-domain';
+import { MongoModel, MongoParamsWhere, MongoParams, MongoUpdateData } from '../entities/model';
 import { Bluebird } from '../utils';
 
-export class Repository<DE, E, M extends MongoModel<E>, P extends IEntityMapper<DE, E>> implements IRepository<DE> {
+export class Repository<DE extends { id?: string }, E extends { id?: string }, M extends MongoModel<E>, P extends IEntityMapper<DE, E>> implements IRepository<DE> {
 
     constructor(private model: M, private mapper: P) { }
 
@@ -13,11 +14,17 @@ export class Repository<DE, E, M extends MongoModel<E>, P extends IEntityMapper<
             .then(d => this.mapper.toDomainEntity(d))
             .catch(error => Bluebird.reject(convertMongoError(error)));
     }
-    update<O>(data: DE, options?: O): Bluebird<DE> {
-        const entity = this.mapper.fromDomainEntity(data);
-        return this.model.update(entity)
+    update<O>(data: RepUpdateData<DE>, options?: O): Bluebird<DE> {
+        try{
+        const entity = this.mapper.fromDomainEntity(data.item);
+        const mdata: MongoUpdateData<E> = { id: entity.id, set: entity, unset: (data.delete || []).reduce((pv, cv) => { pv[cv.toString()] = ""; return pv; }, {}) };
+        debug('updating model', mdata);
+        return this.model.update(mdata)
             .then(d => this.mapper.toDomainEntity(d))
             .catch(error => Bluebird.reject(convertMongoError(error)));
+        }catch(e){
+            return Bluebird.reject(e);
+        }
     }
     remove<O>(id: string, options?: O): Bluebird<boolean> {
         return this.model.remove(id)
@@ -41,7 +48,7 @@ export class Repository<DE, E, M extends MongoModel<E>, P extends IEntityMapper<
             .catch(error => Bluebird.reject(convertMongoError(error)));
     }
 
-    updateMongo(condition, doc, options?){
+    updateMongo(condition, doc, options?) {
         return this.model.updateMongo(condition, doc, options)
     }
 }

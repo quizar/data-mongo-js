@@ -29,11 +29,11 @@ export class MongoModel<T extends BaseEntity> {
     }
 
     normalizeUpdate(data) {
-        data._id = data._id || data.id;
+        // data._id = data._id || data.id;
         return data;
     }
 
-    update(data: T): Bluebird<T> {
+    update(data: MongoUpdateData<T>): Bluebird<T> {
         if (!data) {
             return Bluebird.reject(Error('`data` is required'));
         }
@@ -43,7 +43,7 @@ export class MongoModel<T extends BaseEntity> {
             return Bluebird.reject(e);
         }
         return new Bluebird<T>((resolve, reject) => {
-            this.model.findByIdAndUpdate(data.id, data).then(get, reject).then(resolve);
+            this.model.findByIdAndUpdate(data.id, { $set: data.set, $unset: data.unset }).then(get, reject).then(resolve);
         });
     }
 
@@ -104,4 +104,10 @@ export type MongoParams = {
     offset?: number
     limit?: number
     sort?: string
+}
+
+export type MongoUpdateData<T> = {
+    id: string
+    set?: T
+    unset?: { [index: string]: string }
 }

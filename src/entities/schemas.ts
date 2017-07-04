@@ -36,28 +36,10 @@ export const QuizItemSchema = new Schema({
         required: true,
         enum: ['STRING', 'NUMBER', 'ENTITY']
     },
-    propertyValue: {
-        type: String,
-        trim: true,
-        maxlength: 200,
+    values: {
+        type: [Schema.Types.Mixed],
+        min: 1,
         required: true
-    },
-    qualifierType: {
-        type: String,
-        trim: true,
-        maxlength: 20,
-        enum: ['STRING', 'NUMBER', 'ENTITY']
-    },
-    qualifierValue: {
-        type: String,
-        trim: true,
-        maxlength: 200
-    },
-    qualifierId: {
-        type: String,
-        trim: true,
-        match: /^Q\d+$/,
-        maxlength: 40
     },
 
     title: {

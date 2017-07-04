@@ -44,7 +44,7 @@ export abstract class Repository<DE extends { id?: string }, E extends { id?: st
 
     getById(id: string, options?: RepAccessOptions): Bluebird<DE> {
         return Bluebird.try(() => {
-            return validateFields(this.getEntityName(), options && options.fields)
+            return validateFields(this.getEntityName(), options && options.fields && options.fields.join(' '))
         }).then(select =>
             this.model.one({ where: { _id: id }, select: select })
                 .then(d => this.mapper.toDomainEntity(d))
@@ -53,7 +53,7 @@ export abstract class Repository<DE extends { id?: string }, E extends { id?: st
     }
 
     exists(id: string): Bluebird<boolean> {
-        return this.getById(id, { fields: 'id' }).then(item => !!item);
+        return this.getById(id, { fields: ['id'] }).then(item => !!item);
     }
 
     updateMongo(condition, doc, options?) {

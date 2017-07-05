@@ -1,13 +1,13 @@
 
 const debug = require('debug')('quizar-data');
-import { IRepository, IEntityMapper, convertMongoError, RepUpdateData, RepAccessOptions, RepUpdateOptions, EntityNameType, CodeError } from 'quizar-domain';
+import { Repository as IRepository, IEntityMapper, convertMongoError, RepUpdateData, RepAccessOptions, RepUpdateOptions, EntityNameType, CodeError } from 'quizar-domain';
 import { MongoModel, MongoParamsWhere, MongoParams, MongoUpdateData } from '../entities/model';
 import { Bluebird } from '../utils';
 import { getMapper } from '../entities/mappers';
 
 export abstract class Repository<DE extends { id?: string }, E extends { id?: string }, M extends MongoModel<E>, P extends IEntityMapper<DE, E>> implements IRepository<DE> {
 
-    constructor(private model: M, private mapper: P) { }
+    constructor(private entityName: EntityNameType, private model: M, private mapper: P) { }
 
     create(data: DE, options?: RepAccessOptions): Bluebird<DE> {
         const entity = this.mapper.fromDomainEntity(data);
@@ -44,7 +44,7 @@ export abstract class Repository<DE extends { id?: string }, E extends { id?: st
 
     getById(id: string, options?: RepAccessOptions): Bluebird<DE> {
         return Bluebird.try(() => {
-            return validateFields(this.getEntityName(), options && options.fields && options.fields.join(' '))
+            return validateFields(this.entityName, options && options.fields && options.fields.join(' '))
         }).then(select =>
             this.model.one({ where: { _id: id }, select: select })
                 .then(d => this.mapper.toDomainEntity(d))
@@ -59,8 +59,6 @@ export abstract class Repository<DE extends { id?: string }, E extends { id?: st
     updateMongo(condition, doc, options?) {
         return this.model.updateMongo(condition, doc, options)
     }
-
-    protected abstract getEntityName(): EntityNameType
 }
 
 function validateFields(name: EntityNameType, fields: string): string {

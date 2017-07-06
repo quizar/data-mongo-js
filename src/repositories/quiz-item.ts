@@ -1,5 +1,5 @@
 
-import { QuizItem as DomainQuizItem, QuizItemRepository as IQuizItemRepository, EntityNameType, ENTITY_NAMES } from 'quizar-domain';
+import { QuizItem as DomainQuizItem, QuizItemRepository as IQuizItemRepository, EntityNameType, ENTITY_NAMES, TopicIdIndexKey } from 'quizar-domain';
 import { QuizItemModel, QuizItem } from '../entities/quiz-item';
 import { Repository } from './repository';
 import { QuizItemMapper } from '../entities/mappers';
@@ -12,6 +12,6 @@ export class QuizItemRepository extends Repository<DomainQuizItem, QuizItem, Qui
     }
 
     countByTopicId(topicId: string): Bluebird<number> {
-        return this.count({ topics: topicId });
+        return this.count(TopicIdIndexKey.create(topicId));
     }
 }

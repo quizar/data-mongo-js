@@ -1,12 +1,11 @@
 
 const debug = require('debug')('quizar-data');
-import { Repository as IRepository, IEntityMapper, convertMongoError, RepUpdateData, RepAccessOptions, RepUpdateOptions, EntityNameType, CodeError, DataKeys, RepListData, IdUniqueKey } from 'quizar-domain';
+import { Repository as IRepository, IEntityMapper, convertMongoError, RepUpdateData, RepAccessOptions, RepUpdateOptions, EntityNameType, CodeError, RepGetData, RepListData, IdUniqueKey, DataKeys } from 'quizar-domain';
 import { MongoModel, MongoParamsWhere, MongoParams, MongoUpdateData } from '../entities/model';
 import { Bluebird } from '../utils';
 import { getMapper } from '../entities/mappers';
 
 export abstract class Repository<DE extends { id?: string }, E extends { id?: string }, M extends MongoModel<E>, P extends IEntityMapper<DE, E>> implements IRepository<DE> {
-
     constructor(private entityName: EntityNameType, private model: M, private mapper: P) { }
 
     create(data: DE, options?: RepAccessOptions): Bluebird<DE> {
@@ -26,21 +25,21 @@ export abstract class Repository<DE extends { id?: string }, E extends { id?: st
             .then(d => this.mapper.toDomainEntity(d))
             .catch(error => Bluebird.reject(convertMongoError(error)));
     }
-    remove<O>(id: string, options?: O): Bluebird<boolean> {
+    delete(id: string): Bluebird<boolean> {
         return this.model.remove(id)
             .then(e => !!e)
             .catch(error => Bluebird.reject(convertMongoError(error)));
     }
 
-    count(keys?: DataKeys): Bluebird<number> {
-        const where = toMongoWhere(this.entityName, keys);
+    count(data?: RepGetData): Bluebird<number> {
+        const where = toMongoWhere(this.entityName, data);
 
         return this.model.count(where);
     }
 
-    get(keys: DataKeys, options?: RepAccessOptions): Bluebird<DE> {
+    one(data: RepGetData, options?: RepAccessOptions): Bluebird<DE> {
 
-        return Bluebird.try(() => toMongoParams(this.entityName, { keys: keys, count: 1 }, options && options.fields))
+        return Bluebird.try(() => toMongoParams(this.entityName, { keys: data, count: 1 }, options && options.fields))
             .then(params => this.model.one(params)
                 .then(d => this.mapper.toDomainEntity(d))
                 .catch(error => Bluebird.reject(convertMongoError(error)))
@@ -56,11 +55,7 @@ export abstract class Repository<DE extends { id?: string }, E extends { id?: st
     }
 
     getById(id: string, options?: RepAccessOptions): Bluebird<DE> {
-        return this.get(IdUniqueKey.create(id), options);
-    }
-
-    exists(id: string): Bluebird<boolean> {
-        return this.getById(id, { fields: ['id'] }).then(item => !!item);
+        return this.one(IdUniqueKey.create(id), options);
     }
 }
 
